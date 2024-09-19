@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { TriangleAlert } from 'lucide-react'
 
 export const SignUpSchema = z.object({
+    name: z.string().min(6, 'Name should be minimum of length 6'),
     email: z.string().email(),
     password: z.string().min(6, "Password must be at least 6 characters long"),
     confirmPassword: z.string().min(6, "Confirm password must be at least 6 characters long"),
@@ -51,15 +52,15 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
     });
 
     const onSubmit = (values: any) => {
-        console.log(values.email, values.password)
+        console.log(values.name, values.email, values.password)
         setPending(true);
-       
-            // Replace with your API endpoint
-            signIn("password", { email: values.email, password: values.password, flow: 'signUp' }).catch(() => { setError('Something went wrong') }).finally(() => (
-                setPending(false)
-            ))
-            // Handle successful signup
-    
+
+        // Replace with your API endpoint
+        signIn("password", { name: values.name, email: values.email, password: values.password, flow: 'signUp' }).catch(() => { setError('Something went wrong') }).finally(() => (
+            setPending(false)
+        ))
+        // Handle successful signup
+
     };
 
 
@@ -89,6 +90,14 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             <CardContent className='space-y-5 px-0 pb-0'>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
+                        <FormField control={form.control} name="name" render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input {...field} placeholder='Full name' type='text' disabled={pending} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
                         <FormField control={form.control} name="email" render={({ field }) => (
                             <FormItem>
                                 <FormControl>
