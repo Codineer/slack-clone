@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Card,
     CardHeader,
@@ -6,6 +6,7 @@ import {
     CardContent,
     CardTitle
 } from '../../../components/ui/card';
+import { useAuthActions } from "@convex-dev/auth/react";
 import { FormField, FormItem, FormControl, FormMessage, Form } from '@/components/ui/form';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -15,6 +16,7 @@ import { FaGithub } from 'react-icons/fa';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { TriangleAlert } from 'lucide-react'
 
 export const SignUpSchema = z.object({
     email: z.string().email(),
@@ -35,6 +37,10 @@ interface SignUpCardProps {
 }
 
 export const SignUpCard = ({ setState }: SignUpCardProps) => {
+    const { signIn } = useAuthActions();
+
+    const [pending, setPending] = useState(false)
+    const [error, setError] = useState('')
     const form = useForm({
         resolver: zodResolver(SignUpSchema),
         defaultValues: {
@@ -44,20 +50,27 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
         }
     });
 
-    const onSubmit = async (values: any) => {
-        try {
+    const onSubmit = (values: any) => {
+        console.log(values.email, values.password)
+        setPending(true);
+       
             // Replace with your API endpoint
-            await fetch('/api/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
-            });
+            signIn("password", { email: values.email, password: values.password, flow: 'signUp' }).catch(() => { setError('Something went wrong') }).finally(() => (
+                setPending(false)
+            ))
             // Handle successful signup
-        } catch (error) {
-            // Handle errors
-            console.error('Signup error:', error);
-        }
+    
     };
+
+
+    const onProviderSignUp = (value: 'github' | 'google') => {
+        console.log(value)
+        setPending(true)
+        signIn(value).finally(() => {
+            setPending(false);
+        })
+    }
+
 
     return (
         <Card className='w-full h-full p-8'>
@@ -65,13 +78,21 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
                 <CardTitle>Sign up to continue</CardTitle>
                 <CardDescription>Use your email or another service to continue</CardDescription>
             </CardHeader>
+            {!!error && (
+                <div className='bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6'>
+                    <TriangleAlert className='size-4' />
+                    <p>
+                        {error}
+                    </p>
+                </div>
+            )}
             <CardContent className='space-y-5 px-0 pb-0'>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
                         <FormField control={form.control} name="email" render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input {...field} placeholder='Email' type='email' disabled={false} />
+                                    <Input {...field} placeholder='Email' type='email' disabled={pending} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -79,7 +100,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
                         <FormField control={form.control} name="password" render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input {...field} placeholder='Password' type='password' disabled={false} />
+                                    <Input {...field} placeholder='Password' type='password' disabled={pending} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -87,7 +108,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
                         <FormField control={form.control} name="confirmPassword" render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input {...field} placeholder='Confirm password' type='password' disabled={false} />
+                                    <Input {...field} placeholder='Confirm password' type='password' disabled={pending} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -96,7 +117,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
                             type='submit'
                             className='w-full'
                             size={'lg'}
-                            disabled={false}
+                            disabled={pending}
                         >
                             Continue
                         </Button>
@@ -105,8 +126,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
                 <Separator />
                 <div className='flex flex-col gap-y-2.5'>
                     <Button
-                        disabled={false}
-                        onClick={() => { }}
+                        disabled={pending}
+                        onClick={() => onProviderSignUp("google")}
                         variant={'outline'}
                         size={'lg'}
                         className='w-full relative'
@@ -115,8 +136,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
                         Continue with Google
                     </Button>
                     <Button
-                        disabled={false}
-                        onClick={() => { }}
+                        disabled={pending}
+                        onClick={() => onProviderSignUp("github")}
                         variant={'outline'}
                         size={'lg'}
                         className='w-full relative'
