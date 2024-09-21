@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
+import { Modals } from "@/components/modals";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <ConvexClientProvider>
-
+            <Modals />
             {children}
 
           </ConvexClientProvider>

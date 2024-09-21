@@ -6,9 +6,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { useCurrentUser } from '../hooks/use-current-user'
+
 import { Loader, LogOut } from 'lucide-react'
 import { useAuthActions } from '@convex-dev/auth/react'
+import { useCurrentUser } from '../api/use-current-user'
 export const UserButton = () => {
     const { signOut } = useAuthActions()
     const { data, isLoading } = useCurrentUser()
@@ -20,7 +21,7 @@ export const UserButton = () => {
         return null
     }
     const { image, name, email } = data;
-    console.log(image)
+
     const avatarFallback = name!.charAt(0).toUpperCase()
     return (
         <DropdownMenu modal={false}>
