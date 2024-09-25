@@ -19,7 +19,6 @@ export default function Home() {
     } else if (!open) {
       setOpen(true)
     }
-
   }, [workspaceId, isLoading, open, setOpen])
 
   return (

@@ -3,7 +3,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-    DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
 
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,7 @@ export const WorkspaceSwitcher = () => {
     });
 
     const filteredWorkspaces = workspaces?.filter(
-        (workspace) => workspaceId !== workspace?._id
+        (workspace: any) => workspaceId !== workspace?._id
     )
 
     return (
@@ -43,7 +42,7 @@ export const WorkspaceSwitcher = () => {
                     </span>
                 </DropdownMenuItem>
                 {
-                    filteredWorkspaces?.map((workspace) => (
+                    filteredWorkspaces?.map((workspace: any) => (
                         <DropdownMenuItem
                             key={workspace._id}
                             className='cursor-pointer capitalize overflow-hidden'
