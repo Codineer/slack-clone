@@ -7,6 +7,7 @@ export const WorkspaceSidebar = () => {
     const workspaceId = useWorkspaceId();
     const { data: member, isLoading: memberLoading } = useCurrentMember({ workspaceId });
     const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({ id: workspaceId })
+
     if (workspaceLoading || memberLoading) {
         return (
             <div className="flex flex-col bg-[#5E2C5F] h-full items-center justify-center">
@@ -26,7 +27,7 @@ export const WorkspaceSidebar = () => {
     }
     return (
         <div className="flex flex-col bg-[#5E2C5F] h-full ">
-            <WorkspaceHeader workspace={workspace} />
+            <WorkspaceHeader workspace={workspace} isAdmin={member.role === 'admin'} />
         </div>
     )
 }
